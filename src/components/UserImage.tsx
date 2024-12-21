@@ -1,5 +1,3 @@
-import { User } from "firebase/auth";
-
 export default function UserImage({
   photoURL,
   fallback,

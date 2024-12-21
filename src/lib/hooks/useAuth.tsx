@@ -4,7 +4,7 @@ import { auth } from "../firebase";
 
 const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [opponent, setOpponent] = useState<User | null>(null);
+  const [opponent, _setOpponent] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
