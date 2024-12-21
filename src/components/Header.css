@@ -36,6 +36,8 @@ header {
     gap: 0.5rem;
     border: 3px solid var(--clr);
     border-radius: 50%;
+    user-select: none;
+    
     img {
       /* border: 1px solid var(--clr); */
       border-radius: 50%;

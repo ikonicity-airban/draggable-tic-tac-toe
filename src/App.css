@@ -94,6 +94,7 @@ footer {
     flex-direction: column;
     overflow: clip;
   }
-  footer {
+  .footer {
+    position: absolute;
   }
 }
