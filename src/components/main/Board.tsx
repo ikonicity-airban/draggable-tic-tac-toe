@@ -1,13 +1,13 @@
-import { useGameState, useGameActions } from "../lib/context/GameContext";
+import { useGameState, useGameActions } from "../../lib/context/GameContext";
 import "./Board.css";
 import Drag from "./Drag";
 import Strike from "./Strike";
+
 import Tile from "./Tile";
 
 function Board() {
-  const {
-    state: { board, strikeClass, combo, playerOTile, playerXTile },
-  } = useGameState();
+  const { board, strikeClass, combo, playerOTile, playerXTile } =
+    useGameState();
 
   const { makeMove } = useGameActions();
 

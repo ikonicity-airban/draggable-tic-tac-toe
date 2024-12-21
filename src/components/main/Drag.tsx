@@ -1,10 +1,8 @@
-import { useGameState, useGameActions } from "../lib/context/GameContext";
+import { useGameState, useGameActions } from "../../lib/context/GameContext";
 
 function Drag({ tiles, type }: { tiles: number[]; type: "cross" | "circle" }) {
   //implement drag functionalit
-  const {
-    state: { active, index, turn },
-  } = useGameState();
+  const { active, index, turn } = useGameState();
 
   const { handleClick } = useGameActions();
 

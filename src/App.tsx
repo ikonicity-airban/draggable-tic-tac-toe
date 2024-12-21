@@ -1,27 +1,24 @@
 import "./App.css";
-import Board from "./components/Board";
+import Login from "./components/auth/Login";
 import Header from "./components/Header";
-import Login from "./components/Login";
-import Reset from "./components/Reset";
-import Versus from "./components/Versus";
-import { GameProvider } from "./lib/context/GameContext";
+
+import Game from "./components/main/Game";
+import { useScreenState } from "./lib/context/ScreenContext";
 import useAuth from "./lib/hooks/useAuth";
 
 function App() {
   const { isLoggedIn } = useAuth();
-  if (!isLoggedIn) return <Login />;
-  return (
-    <GameProvider>
-      <main>
-        {/* header */}
-        <Header />
-        <Versus />
-        <Board />
-        {/* footer */}
+  const { screen } = useScreenState();
 
-        <Reset />
-      </main>
-    </GameProvider>
+  if (!isLoggedIn) {
+    return <Login />;
+  }
+  return (
+    <div className="App">
+      <Header />
+      {screen === "login" && <Login />}
+      {screen === "game" && <Game />}
+    </div>
   );
 }
 

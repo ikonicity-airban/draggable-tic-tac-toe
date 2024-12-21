@@ -1,19 +1,8 @@
-import useAuth from "../lib/hooks/useAuth";
-import UserImage from "./UserImage";
+import useAuth from "../../lib/hooks/useAuth";
+import UserImage from "../UserImage";
 
 function Versus() {
-  const { user, opponent, isLoggedIn, login } = useAuth();
-
-  if (!isLoggedIn) {
-    return (
-      <div className="not-logged-in">
-        <p>You are not logged in</p>
-        <button onClick={login} className="">
-          Login
-        </button>
-      </div>
-    );
-  }
+  const { user, opponent } = useAuth();
 
   return (
     <div className="versus">

@@ -1,4 +1,4 @@
-import { useGameActions } from "../lib/context/GameContext";
+import { useGameActions } from "../../lib/context/GameContext";
 
 function Reset() {
   const { reset } = useGameActions();

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer, ReactNode } from "react";
 import { checkWinner } from "../utils";
 
@@ -13,7 +14,7 @@ clickSound.volume = 0.5;
 const initialState = {
   active: false,
   gameState: "inProgress" as
-    | "inProgress"  
+    | "inProgress"
     | "playerXWins"
     | "playerOWins"
     | "draw",
@@ -88,8 +89,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         const newBoard = [...state.board];
         newBoard[index] = state.turn;
 
-        let playerXTile: number[] = [...state.playerXTile];
-        let playerOTile: number[] = [...state.playerOTile];
+        const playerXTile: number[] = [...state.playerXTile];
+        const playerOTile: number[] = [...state.playerOTile];
         if (state.turn === "cross") {
           playerXTile.push(state.index ?? -1);
         } else {
@@ -158,7 +159,7 @@ export const useGameState = () => {
 
   const [state] = context;
 
-  return { state };
+  return state;
 };
 
 export const useGameActions = () => {
