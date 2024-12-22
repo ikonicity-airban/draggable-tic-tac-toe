@@ -1,17 +1,20 @@
+import { cn } from "@/lib/utils";
 import { useGameState, useGameActions } from "../../lib/context/GameContext";
 
 function Drag({ tiles, type }: { tiles: number[]; type: "cross" | "circle" }) {
-  //implement drag functionalit
+  //implement drag functionality
   const { active, index, turn } = useGameState();
 
-  const { handleClick } = useGameActions();
+  const { setActive } = useGameActions();
 
   return (
-    <div className="drag">
+    <div className="drag ">
       {Array.from({ length: 5 }, (_, i) => (
         <div
           key={i}
-          className="drag-box"
+          className={cn("drag-box", {
+            "opacity-30": type != turn,
+          })}
           style={{
             transform:
               active && index === i && type === turn
@@ -21,7 +24,7 @@ function Drag({ tiles, type }: { tiles: number[]; type: "cross" | "circle" }) {
         >
           {!tiles.includes(i) && (
             <div
-              className={type}
+              className={cn(type)}
               draggable
               onDragStart={(e) => {
                 e.preventDefault();
@@ -29,7 +32,7 @@ function Drag({ tiles, type }: { tiles: number[]; type: "cross" | "circle" }) {
                 e.dataTransfer.setData("text", e.target.id);
               }}
               id={`${type}-${i}`}
-              onClick={() => handleClick(i, type)}
+              onClick={() => (turn == type ? setActive(i, type) : undefined)}
             />
           )}
         </div>

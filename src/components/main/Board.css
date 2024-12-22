@@ -28,10 +28,10 @@ section {
     }
   }
   & > :not(:nth-child(3n)) {
-    border-right: 3px solid #fff;
+    border-right: 4px solid #fff;
   }
   :not(:nth-last-child(-n + 4)) {
-    border-bottom: 3px solid #fff;
+    border-bottom: 4px solid #fff;
   }
 }
 
@@ -190,7 +190,7 @@ section {
 @media screen and (max-width: 600px) {
   .board .drop-box {
     width: 70px;
-    border-width: 1.25px;
+    /* border-width: .1px; */
   }
   .game-board .drag {
     flex-direction: row;

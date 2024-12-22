@@ -1,4 +1,19 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
 import { winningCombinations } from "./constants";
+import {
+  DocumentData,
+  FirestoreDataConverter,
+  QueryDocumentSnapshot,
+  SnapshotOptions,
+  WithFieldValue,
+} from "firebase/firestore";
+import { Room } from "./types";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
 
 export function checkWinner(
   tiles: ("cross" | "circle" | null)[],
@@ -31,3 +46,23 @@ export function checkWinner(
   }
   return null;
 }
+
+
+export const roomConverter: FirestoreDataConverter<Room> = {
+  toFirestore(room: WithFieldValue<Room>): DocumentData {
+    return room;
+  },
+  fromFirestore(
+    snapshot: QueryDocumentSnapshot,
+    options: SnapshotOptions
+  ): Room {
+    const data = snapshot.data(options);
+    return {
+      name: data.name,
+      id: snapshot.id,
+      ref: snapshot.ref,
+    };
+  },
+};
+
+export const getRoomLink = (roomId: string) => `https://codeoven-tic-tac-toe.netlify.app/room/${roomId}`;

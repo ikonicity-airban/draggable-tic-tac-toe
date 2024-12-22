@@ -1,15 +1,13 @@
 import Board from "./Board";
-import Reset from "./Reset";
 import Versus from "./Versus";
 
 function Game() {
   return (
-    <main className="">
+    <main className="relative">
       <Versus />
       <Board />
       {/* footer */}
 
-      <Reset />
     </main>
   );
 }

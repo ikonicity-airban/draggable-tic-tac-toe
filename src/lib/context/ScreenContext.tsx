@@ -1,86 +1,79 @@
 /* eslint-disable react-refresh/only-export-components */
 //create a context for the screen to be displayed toggling between the game, the menu, score, login, create room, join room, and settings
 
-import { createContext, useContext, useReducer } from "react";
-type Screens =
-  | "game"
-  | "menu"
-  | "score"
-  | "login"
-  | "createRoom"
-  | "joinRoom"
-  | "settings";
+import { create } from "zustand";
 
-const initialState = {
-  screen: "login" as Screens,
-  step: 0,
-};
+type ModalContent = "game" | "menu" | "score" | "login" | "createRoom" | "joinRoom" | "settings";
+type BottomSheetContent = "info" | "settings" | "notifications";
 
-type ScreenAction =
-  | {
-      type: "setScreen";
-      payload: Screens;
-    }
-  | { type: "setStep"; payload: number };
+interface ScreenState {
+  modalVisible: boolean;
+  modalContent: ModalContent;
+  modalTitle: string;
+  bottomSheetVisible: boolean;
+  bottomSheetContent: BottomSheetContent;
+  bottomSheetTitle: string;
+  setModalVisible: (visible: boolean) => void;
+  setModalContent: (content: ModalContent) => void;
+  setModalTitle: (title: string) => void;
+  setBottomSheetVisible: (visible: boolean) => void;
+  setBottomSheetContent: (content: BottomSheetContent) => void;
+  setBottomSheetTitle: (title: string) => void;
+}
 
-export const ScreenContext = createContext<
-  | [state: typeof initialState, dispatch: React.Dispatch<ScreenAction>]
-  | undefined
->(undefined);
+const useScreenStore = create<ScreenState>((set) => ({
+  modalVisible: false,
+  modalContent: "login",
+  modalTitle: "",
+  bottomSheetVisible: false,
+  bottomSheetContent: "info",
+  bottomSheetTitle: "",
+  setModalVisible: (visible) => set({ modalVisible: visible }),
+  setModalContent: (content) => set({ modalContent: content }),
+  setModalTitle: (title) => set({ modalTitle: title }),
+  setBottomSheetVisible: (visible) => set({ bottomSheetVisible: visible }),
+  setBottomSheetContent: (content) => set({ bottomSheetContent: content }),
+  setBottomSheetTitle: (title) => set({ bottomSheetTitle: title }),
+}));
 
 export const ScreenProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, dispatch] = useReducer(
-    (state: typeof initialState, action: ScreenAction) => {
-      switch (action.type) {
-        case "setScreen":
-          return {
-            ...state,
-            screen: action.payload,
-          };
-        case "setStep":
-          return {
-            ...state,
-            step: action.payload,
-          };
-        default:
-          return state;
-      }
-    },
-    initialState
-  );
-
-  return (
-    <ScreenContext.Provider value={[state, dispatch]}>
-      {children}
-    </ScreenContext.Provider>
-  );
+  return <>{children}</>;
 };
 
 export const useScreenState = () => {
-  const context = useContext(ScreenContext);
-  if (!context) {
-    throw new Error("useScreenContext must be used within a ScreenProvider");
-  }
-
-  const [state] = context;
-
-  return state;
+  const {
+    modalVisible,
+    modalContent,
+    modalTitle,
+    bottomSheetVisible,
+    bottomSheetContent,
+    bottomSheetTitle,
+  } = useScreenStore();
+  return {
+    modalVisible,
+    modalContent,
+    modalTitle,
+    bottomSheetVisible,
+    bottomSheetContent,
+    bottomSheetTitle,
+  };
 };
 
 export const useScreenActions = () => {
-  const context = useContext(ScreenContext);
-  if (!context) {
-    throw new Error("useScreen must be used within a ScreenProvider");
-  }
-
-  const [, dispatch] = context;
-
+  const {
+    setModalVisible,
+    setModalContent,
+    setModalTitle,
+    setBottomSheetVisible,
+    setBottomSheetContent,
+    setBottomSheetTitle,
+  } = useScreenStore();
   return {
-    setScreen: (screen: Screens) => {
-      dispatch({ type: "setScreen", payload: screen });
-    },
-    setStep: (step: number) => {
-      dispatch({ type: "setStep", payload: step });
-    },
+    setModalVisible,
+    setModalContent,
+    setModalTitle,
+    setBottomSheetVisible,
+    setBottomSheetContent,
+    setBottomSheetTitle,
   };
 };

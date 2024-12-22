@@ -1,23 +1,64 @@
+import { Route, Routes } from "react-router";
 import "./App.css";
-import Login from "./components/auth/Login";
-import Header from "./components/Header";
 
 import Game from "./components/main/Game";
-import { useScreenState } from "./lib/context/ScreenContext";
-import useAuth from "./lib/hooks/useAuth";
+import Room from "./components/room/Room";
+import AuthLayout from "./layouts/AuthLayout";
+import Login from "./components/auth/Login";
+import GameLayout from "./layouts/game-layout";
+
+import { Helmet } from "react-helmet";
+import { useGameState } from "./lib/context/GameContext";
+import { useEffect } from "react";
+import { useAppThemeColor } from "./lib/context/AppTheme";
+import GameDialog from "./components/GameDialog";
+import RoomList from "./components/room/RoomList";
+import NewRoom from "./components/room/NewRoom";
+import RoomLayout from "./layouts/RoomLayout";
+
+const colorWheel = ["#9055f0", "#ff0058", "#008500"];
 
 function App() {
-  const { isLoggedIn } = useAuth();
-  const { screen } = useScreenState();
+  const { gameState } = useGameState();
+  const { themeColor, setThemeColor } = useAppThemeColor();
 
-  if (!isLoggedIn) {
-    return <Login />;
-  }
+  useEffect(() => {
+    let timeOut: ReturnType<typeof setTimeout>;
+    if (gameState === "inProgress") {
+      timeOut = setInterval(() => {
+        setThemeColor(
+          colorWheel[Math.floor(Math.random() * colorWheel.length)]
+        );
+      }, 30000);
+    }
+    if (gameState === "playerOWins") {
+      setThemeColor(colorWheel[2]);
+    }
+    return () => {
+      clearInterval(timeOut);
+    };
+  }, [gameState, setThemeColor]);
+
   return (
     <div className="App">
-      <Header />
-      {screen === "login" && <Login />}
-      {screen === "game" && <Game />}
+      <Helmet>
+        <meta name="theme-color" content={themeColor} />
+      </Helmet>
+      <Routes>
+        <Route element={<GameLayout />}>
+          <Route index element={<Game />} />
+        </Route>
+        <Route element={<AuthLayout />}>
+          <Route path="login" element={<Login />} />
+        </Route>
+        <Route element={<RoomLayout />}>
+          <Route path="rooms/new" element={<NewRoom />} />
+          <Route path="rooms" element={<RoomList />} />
+          <Route path="rooms/:roomId" element={<Room />} />
+        </Route>
+      </Routes>
+      {/* {<Confetti />} */}
+      <GameDialog />
     </div>
   );
 }

@@ -12,7 +12,7 @@ function Board() {
   const { makeMove } = useGameActions();
 
   return (
-    <section className="game-board">
+    <section className="game-board relative h-fit">
       <Drag type="cross" tiles={playerXTile} />
       <div className="board">
         {board.map((cell, i) => (

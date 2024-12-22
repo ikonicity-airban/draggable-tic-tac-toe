@@ -13,3 +13,16 @@ export const winningCombinations = [
     { combo: [0, 4, 8], strikeClass: "strike-diagonal-1" },
     { combo: [2, 4, 6], strikeClass: "strike-diagonal-2" },
   ];
+
+
+  export const siteInfo = {
+    title: "CodeOven",
+    description: "CodeOven is a platform for developers to showcase their skills and projects.",
+    url: "https://codeoven-tic-tac-toe.netlify.app/",
+    image: "https://codeoven.com/logo.png",
+    twitter: "@codeoven",
+    github: "https://github.com/codeoven",
+    discord: "https://discord.gg/codeoven",
+    email: "support@codeoven.com",
+  };
+
