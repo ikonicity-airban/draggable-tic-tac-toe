@@ -16,10 +16,9 @@ const NewRoom: React.FC = () => {
   const [state, copyToClipboard] = useCopyToClipboard();
   //loading state
   const [loading, setLoading] = useState(false);
-  console.log("🚀 ~ loading:", loading)
-
   const { user } = useAuth();
   const createRoom = async () => {
+    if (!roomName) return;
     setLoading(true);
 
     try {
@@ -29,7 +28,6 @@ const NewRoom: React.FC = () => {
           {
             uid: user?.uid,
             name: user?.displayName,
-            symbol: "X",
           },
         ],
         creator: user?.uid,
@@ -37,7 +35,7 @@ const NewRoom: React.FC = () => {
       setRoomId(room.id);
       setRoomName("");
     } catch (error) {
-      console.log("🚀 ~ createRoom ~ error:", error)
+      console.log("🚀 ~ createRoom ~ error:", error);
       alert("Error creating room");
       setLoading(false);
       return;
@@ -49,7 +47,7 @@ const NewRoom: React.FC = () => {
 
   return (
     <section className="p-4">
-      <section className="login-page flex flex-col max-h-[100%] justify-center items-center p-4">
+      <section className="login-page flex flex-col max-h-[100%] max-w-lg justify-center items-center p-4">
         <h2 className="text-2xl font-bold text-outline">Create New Room</h2>
         <div className="bg-[#fff1] z-10 backdrop-blur-sm min-h-24 flex flex-col gap-2 p-4 rounded-lg w-full">
           {!roomId ? (
@@ -62,20 +60,23 @@ const NewRoom: React.FC = () => {
                 required
                 placeholder="Room Name"
               />{" "}
-              <Button variant="outline" onClick={createRoom}>
+              <Button variant="outline" onClick={createRoom} disabled={loading}>
                 Create Room
               </Button>
             </div>
           ) : (
             <>
-              <p>Share this link with your opponent</p>
+              <p className="text-center font-medium text-sm">
+                Share this link with your opponent
+              </p>
               <div className="flex items-center gap-2 rounded-lg w-full">
                 <div className="grid flex-1 gap-2 text-center">
                   <Input
-                    defaultValue={`https://codeoven-tic-tac-toe.netlify.app/room/${roomId}`}
-                    value={`https://codeoven-tic-tac-toe.netlify.app/room/${roomId}`}
+                    defaultValue={getRoomLink(roomId)}
+                    value={getRoomLink(roomId)}
                     readOnly
-                    className="text-xs text-green-300"
+                    className="text-xs text-green-300 cursor-pointer"
+                    onClick={() => copyToClipboard(getRoomLink(roomId))}
                   />
                 </div>
                 <Button
@@ -96,7 +97,6 @@ const NewRoom: React.FC = () => {
               <Link
                 to={`/rooms/roomId`}
                 className={buttonVariants({ variant: "outline" })}
-                onClick={createRoom}
               >
                 Join Room
               </Link>

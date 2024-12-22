@@ -32,8 +32,8 @@ function Login() {
           className="google"
           onClick={login}
         >
-          Sign In with Google
           <img src="/google.png" alt="google" width="20px" height="20px" />
+          Login with Google
         </Button>
       </form>
     </section>

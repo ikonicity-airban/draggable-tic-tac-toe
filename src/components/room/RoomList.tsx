@@ -23,7 +23,7 @@ const RoomList: React.FC = () => {
 
   return (
     <section className="p-4">
-      <section className="login-page flex flex-col max-h-[100%] justify-center items-center p-4">
+      <section className="login-page flex flex-col max-h-[100%] max-w-xl justify-center items-center p-4">
         {loading ? (
           <div className="flex items-center justify-center animate-pulse size-20">
             <Logo />
@@ -33,7 +33,7 @@ const RoomList: React.FC = () => {
             <h2 className="text-2xl font-bold text-outline">Available Rooms</h2>
             <div className="bg-[#fff1] z-10 backdrop-blur-sm min-h-24 flex flex-col gap-2 p-4 rounded-lg w-full">
               <div className={buttonVariants({ variant: "outline" })}>
-                <Link to="/room/new" className="flex items-center gap-2">
+                <Link to="/rooms/new" className="flex items-center gap-2">
                   <Plus />
                   Create Room
                 </Link>
@@ -43,7 +43,7 @@ const RoomList: React.FC = () => {
                   <>
                     <Link
                       key={room.id}
-                      to={`/room/${room.id}`}
+                      to={`/rooms/${room.id}`}
                       className="flex items-center gap-2 p-3 justify-between"
                     >
                       {room.data().name}

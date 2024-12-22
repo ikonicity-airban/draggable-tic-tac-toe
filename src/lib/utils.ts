@@ -61,6 +61,10 @@ export const roomConverter: FirestoreDataConverter<Room> = {
       name: data.name,
       id: snapshot.id,
       ref: snapshot.ref,
+      players: data.players,
+      creator: data.creator,
+      isActive: data.isActive,
+      createdAt: data.createdAt,
     };
   },
 };

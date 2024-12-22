@@ -1,15 +1,21 @@
 import AuthHOC from "@/components/AuthHOC";
-import Header from "@/components/Header";
+import Logo from "@/components/Logo";
+import { Helmet } from "react-helmet";
 
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 
 function RoomLayout() {
+  const pathname =
+    useLocation().pathname.split("/").slice(2).join("/") || "Home";
   return (
     <AuthHOC>
-      <main>
-        <Header />
-        <Outlet />
-      </main>
+      <Helmet>
+        <title>Rooms | {pathname}</title>
+      </Helmet>
+      <div className="flex p-4">    
+        <Logo className="size-10" />
+      </div>
+      <Outlet />
     </AuthHOC>
   );
 }
