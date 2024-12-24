@@ -8,13 +8,13 @@ export default function UserImage({
 }: {
   className?: string;
   photoURL: string;
-  fallback: string;
+  fallback?: string;
 }) {
   return (
     <div className="flex items-center justify-between">
       <div
         className={cn(
-          "flex items-center justify-center rounded-full size-10 border",
+          "flex items-center justify-center rounded-full size-10 border overflow-clip",
           className
         )}
       >

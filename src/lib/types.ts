@@ -3,7 +3,7 @@ import { DocumentData, Timestamp } from "firebase/firestore";
 export type Room = {
     id: string;
     name: string;
-    players: string[];
+    players: Player[];
     creator: string;
     isActive: boolean;
     createdAt: Timestamp;
@@ -11,7 +11,8 @@ export type Room = {
 
 export type Player = {
     id: string;
-    name: string;
+    displayName: string;
+    photoURL?: string;
     isActive: boolean;
     createdAt: Timestamp;
     tile?: "cross" | "circle";

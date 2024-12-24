@@ -17,25 +17,35 @@ function Login() {
   //   }
   // };
   const { login } = useAuth();
+  // logout()
+  // const navigate = useNavigate();
+  // useEffect(() => {
+  //   if (user !== null) {
+  //     navigate("/rooms");
+  //   }
+  // }, [user]);
+
   return (
-    <section className="login-page flex flex-col min-h-[100%] justify-center items-center p-4">
-      <form className="z-10 bg-[#fff1] w-[min(300px,80vw)] h-[min(250px,80vw)] p-4 rounded-lg flex flex-col gap-1 items-center justify-around backdrop-blur-md">
-        <div className="flex flex-col items-center gap-2">
-          <h2 className="text-2xl font-bold text-outline">Login</h2>
-          <Logo />
-        </div>
-        {/* <Input type="email" placeholder="Email"  />
+    <section className="h-[85vh] flex items-center">
+      <section className="login-page flex flex-col min-h-[100%] justify-center items-center p-4">
+        <form className="z-10 bg-[#fff1] w-[min(300px,80vw)] h-[min(250px,80vw)] p-4 rounded-lg flex flex-col gap-1 items-center justify-around backdrop-blur-md">
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="text-2xl font-bold text-outline">Login</h2>
+            <Logo />
+          </div>
+          {/* <Input type="email" placeholder="Email"  />
         <Input type="password" placeholder="Password" /> */}
-        <Button
-          type="button"
-          variant="outline"
-          className="google"
-          onClick={login}
-        >
-          <img src="/google.png" alt="google" width="20px" height="20px" />
-          Login with Google
-        </Button>
-      </form>
+          <Button
+            type="button"
+            variant="outline"
+            className="google"
+            onClick={login}
+          >
+            <img src="/google.png" alt="google" width="20px" height="20px" />
+            Login with Google
+          </Button>
+        </form>
+      </section>
     </section>
   );
 }

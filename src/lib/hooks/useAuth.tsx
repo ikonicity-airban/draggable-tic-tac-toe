@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { signInAnonymously, User } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { useNavigate } from "react-router";
 import { FirebaseError } from "firebase/app";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
+import createPlayerDto from "../DTOs/player-dto";
 
 const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -13,33 +15,39 @@ const useAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {  
-      setUser(user);
+    // logout();
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
     });
     return unsubscribe;
   }, []);
 
   const login = () => {
+    setLoading(true);
     // signInWithPopup(auth, new GoogleAuthProvider())
     //   .then(({ user: userSnap }) => {
-    //     if (!user)
-    //       setDoc(doc(db, "players"), {
-    //         ...createPlayerDto(userSnap),
-    //       });
+    //     setDoc(doc(db, "players", user?.uid ?? ""), {
+    //       ...createPlayerDto(userSnap),
+    //     });
     //   })
     //   .catch((error) => {
-    //     console.log("🚀 ~ login ~ error:", error)
-    //     alert("An Error Occured");
+    //     console.log("🚀 ~ login ~ error:", error.message);
+    //     alert("An Error Occured (" + error.code + ")");
     //   });
-    setLoading(true);
     signInAnonymously(auth)
       .then(() => {
-        // Signed in..
-        setUser(auth.currentUser);
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
-        navigate("/rooms");
+        if (auth.currentUser) {
+          // Signed in..
+          setUser(auth.currentUser);
+          setDoc(doc(db, "players", auth.currentUser?.uid ?? ""), {
+            ...createPlayerDto(auth.currentUser),
+          });
+
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000);
+          navigate("/rooms");
+        }
       })
       .catch((error: FirebaseError) => {
         const errorCode = error.code;
@@ -51,6 +59,13 @@ const useAuth = () => {
   };
 
   const logout = () => {
+    if (user) {
+      user.delete();
+      updateDoc(doc(db, "players", user?.uid ?? ""), {
+        isActive: false,
+      });
+    }
+    navigate("/login");
     auth.signOut();
     navigate("/login", { replace: true });
   };

@@ -1,6 +1,6 @@
 import { db } from "@/lib/firebase";
 import { type Room } from "@/lib/types";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { Button, buttonVariants } from "../ui/button";
 import { useCopyToClipboard } from "react-use";
@@ -9,10 +9,12 @@ import { Input } from "../ui/input";
 import { Link } from "react-router";
 import { getRoomLink } from "@/lib/utils";
 import useAuth from "@/lib/hooks/useAuth";
+import createPlayerDto from "@/lib/DTOs/player-dto";
+import { faker } from "@faker-js/faker";
 
 const NewRoom: React.FC = () => {
   const [roomId, setRoomId] = useState<string>("");
-  const [roomName, setRoomName] = useState<string>("");
+  const [roomName, setRoomName] = useState<string>(() => faker.lorem.words(2));
   const [state, copyToClipboard] = useCopyToClipboard();
   //loading state
   const [loading, setLoading] = useState(false);
@@ -20,18 +22,18 @@ const NewRoom: React.FC = () => {
   const createRoom = async () => {
     if (!roomName) return;
     setLoading(true);
-
+    if (!user) return;
     try {
       const room = await addDoc<Room, Room>(collection(db, "rooms"), {
         name: roomName,
-        players: [
-          {
-            uid: user?.uid,
-            name: user?.displayName,
-          },
-        ],
-        creator: user?.uid,
+        creator: user.uid,
       });
+
+      setDoc(doc(db, "rooms", room.id, "players", user.uid), {
+        ...createPlayerDto(user),
+        tile: "cross",
+      });
+
       setRoomId(room.id);
       setRoomName("");
     } catch (error) {
@@ -95,7 +97,7 @@ const NewRoom: React.FC = () => {
                 </Button>
               </div>
               <Link
-                to={`/rooms/roomId`}
+                to={`/rooms/${roomId}`}
                 className={buttonVariants({ variant: "outline" })}
               >
                 Join Room

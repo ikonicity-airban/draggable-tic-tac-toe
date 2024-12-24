@@ -139,9 +139,13 @@ section.login-page::before {
     z-index: 10;
   }
 }
+
+.logo {
+  
+}
 section.login-page {
-  height: 85vh;
-  width: 100vw;
+  /* height: 85vh; */
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;

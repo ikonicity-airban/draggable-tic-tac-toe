@@ -3,6 +3,9 @@ import { create } from "zustand";
 import clickSoundAsset from "/click.wav";
 import gameOverSoundAsset from "/game-over.wav";
 import { checkWinner } from "../utils";
+import { User } from "firebase/auth";
+import { doc, increment, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const gameOverSound = new Audio(gameOverSoundAsset);
 gameOverSound.volume = 0.2;
@@ -13,6 +16,7 @@ type GameStateType = "inProgress" | "playerXWins" | "playerOWins" | "draw";
 type TurnType = "cross" | "circle";
 
 interface GameStoreState {
+  id: string;
   active: boolean;
   gameState: GameStateType;
   index: number | null;
@@ -22,13 +26,16 @@ interface GameStoreState {
   playerXTile: number[];
   playerOTile: number[];
   board: (TurnType | null)[];
-  setActive: (index: number, type: TurnType) => void;
-  changeGameState: (gameState: GameStateType) => void;
-  makeMove: (index: number) => void;
+  winner?: string | null;
+  setActive: (index: number, type: TurnType, gameState: GameState) => void;
+  changeGameState: (gameState: GameStateType, game: GameState) => void;
+  makeMove: (index: number, gameState: GameState) => void;
   reset: () => void;
+  updateGame: (data: Partial<GameState>) => void;
 }
 
-const initialState = {
+export const initialGameState = {
+  id: "1",
   active: false,
   gameState: "inProgress" as GameStateType,
   index: null as number | null,
@@ -40,48 +47,50 @@ const initialState = {
   board: Array(9).fill(null) as (TurnType | null)[],
 };
 
-const useGameStore = create<GameStoreState>((set, get) => ({
-  ...initialState,
-  setActive: (index, type) => {
-    const state = get();
-    if (state.gameState !== "inProgress" || state.turn !== type) {
-      return;
-    }
+const gameId = new URLSearchParams(location.search).get("gameId");
+console.log("🚀 ~ gameId:", gameId);
+const roomId = new URLSearchParams(location.search).get("roomId");
+const updateGameState = async (game: GameState, update: Partial<GameState>) => {
+  return updateDoc(doc(db, "rooms", `${roomId}`, "games", gameId ?? "ai"), {
+    ...game,
+    ...update,
+  });
+};
 
-    set({
-      active: state.active && state.index === index ? !state.active : true,
-      index,
-    });
+const useGameStore = create<GameStoreState>((set) => ({
+  ...initialGameState,
+  setActive: (index, type, gameState) => {
+    const state = gameState;
+    if (state.gameState !== "inProgress" || state.turn !== type) return;
+
+    const active = state.active && state.index === index ? !state.active : true;
+    set({ active, index });
+    updateGameState(state, { active, index });
   },
-  changeGameState: (gameState) => set({ gameState }),
-  makeMove: (index) => {
-    const state = get();
-
+  changeGameState: (gameState, game) => {
+    set({ gameState });
+    updateGameState(game, { gameState });
+  },
+  makeMove: (index, gameState) => {
+    const state = gameState;
     if (!state.active) {
-      set({
-        active: true,
-        index:
-          state.turn === "cross"
-            ? 4 - state.playerXTile.length
-            : 4 - state.playerOTile.length,
-      });
+      const newIndex =
+        state.turn === "cross"
+          ? 4 - state.playerXTile.length
+          : 4 - state.playerOTile.length;
+      set({ active: true, index: newIndex });
+      updateGameState(state, { active: true, index: newIndex });
       return;
     }
 
-    if (state.board[index] !== null || state.gameState !== "inProgress") {
-      return;
-    }
+    if (state.board[index] !== null || state.gameState !== "inProgress") return;
 
     const newBoard = [...state.board];
     newBoard[index] = state.turn;
-
     const playerXTile = [...state.playerXTile];
     const playerOTile = [...state.playerOTile];
-    if (state.turn === "cross") {
-      playerXTile.push(state.index ?? -1);
-    } else {
-      playerOTile.push(state.index ?? -1);
-    }
+    if (state.turn === "cross") playerXTile.push(state.index ?? -1);
+    else playerOTile.push(state.index ?? -1);
 
     const check = checkWinner(newBoard, state.turn);
     if (check?.draw) {
@@ -93,18 +102,33 @@ const useGameStore = create<GameStoreState>((set, get) => ({
         playerXTile,
         playerOTile,
       });
+      updateGameState(state, {
+        board: newBoard,
+        gameState: "draw",
+        active: false,
+        playerXTile,
+        playerOTile,
+      });
       return;
     }
     if (check?.match && check?.strikeClass) {
       gameOverSound.play();
-      set({
+      const winner = state.turn === "cross" ? state.playerX : state.playerO;
+      const gameStateUpdate = {
         active: false,
-        strikeClass: check?.strikeClass,
-        combo: check?.combo ?? [],
+        strikeClass: check.strikeClass,
+        combo: check.combo ?? [],
         board: newBoard,
-        gameState: state.turn === "cross" ? "playerOWins" : "playerXWins",
+        winner,
+        gameState: state.turn === "cross" ? "playerXWins" : "playerOWins",
         playerXTile,
         playerOTile,
+      } satisfies Partial<GameState>;
+
+      set(gameStateUpdate);
+      updateGameState(state, gameStateUpdate);
+      updateDoc(doc(db, "rooms", `${roomId}`, "players", `${winner}`), {
+        score: increment(1),
       });
       return;
     }
@@ -117,8 +141,23 @@ const useGameStore = create<GameStoreState>((set, get) => ({
       playerXTile,
       playerOTile,
     });
+    updateGameState(state, {
+      active: false,
+      board: newBoard,
+      turn: state.turn === "cross" ? "circle" : "cross",
+      playerXTile,
+      playerOTile,
+    });
   },
-  reset: () => set({ ...initialState }),
+  reset: () => {
+    set({ ...initialGameState });
+    updateDoc(doc(db, "rooms", `${roomId}`, "games", `${gameId}`), {
+      ...initialGameState,
+    });
+  },
+  updateGame: (data: Partial<GameState>) => {
+    console.log("🚀 ~ useGameStore ~ data:", data);
+  },
 }));
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
@@ -151,10 +190,22 @@ export const useGameState = () => {
 };
 
 export const useGameActions = () => {
-  const { setActive, changeGameState, makeMove, reset } = useGameStore();
-  return { setActive, changeGameState, makeMove, reset };
+  const { setActive, changeGameState, makeMove, reset, updateGame } =
+    useGameStore();
+  return { setActive, changeGameState, makeMove, reset, updateGame };
 };
 
-// Helper function to check for a winner
-
-/*  */
+export type GameState = {
+  active: boolean;
+  gameState: GameStateType;
+  index: number | null;
+  turn: TurnType;
+  combo: number[];
+  strikeClass: string | null;
+  playerXTile: number[];
+  playerOTile: number[];
+  winner?: string | null;
+  board: (TurnType | null)[];
+  playerX: User["uid"] | null;
+  playerO: User["uid"] | null;
+};

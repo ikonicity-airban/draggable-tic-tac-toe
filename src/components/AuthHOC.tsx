@@ -1,6 +1,6 @@
 import useAuth from "@/lib/hooks/useAuth";
-import React from "react";
-import GameDialog from "./GameDialog";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router";
 
 interface AuthHOCProps {
   children: React.ReactNode;
@@ -8,10 +8,19 @@ interface AuthHOCProps {
 
 const AuthHOC: React.FC<AuthHOCProps> = ({ children }) => {
   const isAuthenticated = useAuth().user !== null;
-  console.log("🚀 ~ isAuthenticated:", isAuthenticated);
+  const { loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (!isAuthenticated && loading) {
+        navigate("/login");
+      }
+    }, 3000);
+  }, [navigate, isAuthenticated, loading]);
 
   if (!isAuthenticated) {
-    return <GameDialog />;
+    return null;
   }
 
   return <>{children}</>;

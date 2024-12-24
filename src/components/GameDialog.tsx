@@ -1,13 +1,16 @@
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useScreenActions, useScreenState } from "@/lib/context/ScreenContext";
 import Reset from "./main/Reset";
 
 export default function GameDialog() {
-  const { setModalVisible } =
-    useScreenActions();
+  const { setModalVisible } = useScreenActions();
   const { modalContent, modalTitle, modalVisible } = useScreenState();
-
-
 
   return (
     <Dialog open={modalVisible} onOpenChange={setModalVisible}>
@@ -18,16 +21,17 @@ export default function GameDialog() {
         <DialogHeader>
           <DialogTitle>{modalTitle}</DialogTitle>
         </DialogHeader>
-        {modalContent == "score" && <GameOverContent />}
-        
+        {modalContent == "score" && <GameOverContent text="score" />}
       </DialogContent>
     </Dialog>
   );
 }
 
-const GameOverContent = () => <>
-<div>Game Over Soon</div>
-<DialogFooter>
-  <Reset/>
-</DialogFooter>
-</>
+const GameOverContent = ({ text }: { text: string }) => (
+  <>
+    <div>{text}</div>
+    <DialogFooter>
+      <Reset />
+    </DialogFooter>
+  </>
+);
