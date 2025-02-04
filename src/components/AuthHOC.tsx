@@ -1,4 +1,5 @@
 import useAuth from "@/lib/hooks/useAuth";
+import { UI_LINKS } from "@/lib/links";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 
@@ -12,16 +13,10 @@ const AuthHOC: React.FC<AuthHOCProps> = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setTimeout(() => {
-      if (!isAuthenticated && loading) {
-        navigate("/login");
-      }
-    }, 3000);
-  }, [navigate, isAuthenticated, loading]);
-
-  if (!isAuthenticated) {
-    return null;
-  }
+    if (!isAuthenticated && loading) {
+      navigate(UI_LINKS.login);
+    }
+  }, [isAuthenticated, loading]);
 
   return <>{children}</>;
 };

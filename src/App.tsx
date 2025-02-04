@@ -1,7 +1,7 @@
-import { Navigate, Route, Routes } from "react-router";
+import { Route, Routes } from "react-router";
 import "./App.css";
 
-import Game from "./components/main/Game";
+import Game from "./pages/game-page";
 import Room from "./components/room/Room";
 import AuthLayout from "./layouts/AuthLayout";
 import Login from "./components/auth/Login";
@@ -15,8 +15,8 @@ import GameDialog from "./components/GameDialog";
 import RoomList from "./components/room/RoomList";
 import NewRoom from "./components/room/NewRoom";
 import RoomLayout from "./layouts/RoomLayout";
-
-const colorWheel = ["#9055f0", "#ff0058", "#008500", "#f0f030", "#00f000", "#f000f0", "#900090, #f090f0"];
+import { colorWheel } from "./lib/constants";
+import MainPage from "./pages/main-page";
 
 function App() {
   const { gameState } = useGameState();
@@ -46,7 +46,7 @@ function App() {
       </Helmet>
       <Routes>
         <Route element={<GameLayout />}>
-          <Route index element={<Navigate to='/rooms' replace />} />
+          <Route index element={<MainPage/>} />
         </Route>
         <Route element={<AuthLayout />}>
           <Route path="login" element={<Login />} />

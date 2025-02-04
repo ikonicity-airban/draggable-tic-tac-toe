@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { useScreenActions, useScreenState } from "@/lib/context/ScreenContext";
 import Reset from "./main/Reset";
+import { ReactNode } from "react";
 
 export default function GameDialog() {
   const { setModalVisible } = useScreenActions();
@@ -21,15 +22,15 @@ export default function GameDialog() {
         <DialogHeader>
           <DialogTitle>{modalTitle}</DialogTitle>
         </DialogHeader>
-        {modalContent == "score" && <GameOverContent text="score" />}
+        {<GameOverContent>{modalContent}</GameOverContent>}
       </DialogContent>
     </Dialog>
   );
 }
 
-const GameOverContent = ({ text }: { text: string }) => (
+const GameOverContent = ({ children }: { children: ReactNode }) => (
   <>
-    <div>{text}</div>
+    <div>{children}</div>
     <DialogFooter>
       <Reset />
     </DialogFooter>

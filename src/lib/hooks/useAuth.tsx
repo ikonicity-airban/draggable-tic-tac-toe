@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { FirebaseError } from "firebase/app";
 import { doc, setDoc, updateDoc } from "firebase/firestore";
 import createPlayerDto from "../DTOs/player-dto";
+import { UI_LINKS } from "../links";
 
 const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -29,6 +30,8 @@ const useAuth = () => {
     //     setDoc(doc(db, "players", user?.uid ?? ""), {
     //       ...createPlayerDto(userSnap),
     //     });
+    //     setLoading(false);
+    //     navigate(UI_LINKS.rooms);
     //   })
     //   .catch((error) => {
     //     console.log("🚀 ~ login ~ error:", error.message);
@@ -65,9 +68,8 @@ const useAuth = () => {
         isActive: false,
       });
     }
-    navigate("/login");
     auth.signOut();
-    navigate("/login", { replace: true });
+    navigate(UI_LINKS.login, { replace: true });
   };
 
   return { login, logout, user, opponent, loading };

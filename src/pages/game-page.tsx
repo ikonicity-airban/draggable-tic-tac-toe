@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router";
-import Board from "./Board";
-import Versus from "./Versus";
+import Board from "../components/main/Board";
+import Versus from "../components/main/Versus";
 import {
   useCollectionDataOnce,
   useDocumentData,
@@ -8,12 +8,11 @@ import {
 import { db } from "@/lib/firebase";
 import { collection, doc, DocumentData } from "firebase/firestore";
 import { useEffect } from "react";
-import Confetti from "../Confetti";
+import Confetti from "../components/Confetti";
 import { useEffectOnce, useLocation } from "react-use";
-import Logo from "../Logo";
+import Logo from "../components/Logo";
 import { GameState, useGameState } from "@/lib/context/GameContext";
 import { Player } from "@/lib/types";
-import { useScreenActions } from "@/lib/context/ScreenContext";
 
 function Game() {
   const { gameId: roomId } = useParams() || "";
@@ -21,12 +20,9 @@ function Game() {
   const gameId = new URLSearchParams(search).get("gameId");
   const navigate = useNavigate();
 
-  const { setModalTitle, setModalContent, setModalVisible } =
-    useScreenActions();
-
   useEffectOnce(() => {
-    if (!roomId) {
-      navigate("/games", { replace: true });
+    if (!roomId || !gameId) {
+      navigate("/rooms", { replace: true });
     }
   });
 
@@ -57,13 +53,7 @@ function Game() {
    * responsible for saving boardState to the database
    */
   ///////////////
-  useEffect(() => {
-    if (game?.gameState !== "inProgress" && game?.winner ) {
-      setModalTitle("Game Over");
-      setModalContent("score");
-      setModalVisible(true);
-    }
-  }, [game?.gameState]);
+
 
   if (loadingGame || loadingPlayers) {
     return (

@@ -18,11 +18,12 @@ export const winningCombinations = [
   export const siteInfo = {
     title: "CodeOven",
     description: "CodeOven is a platform for developers to showcase their skills and projects.",
-    url: "https://codeoven-tic-tac-toe.netlify.app/",
+    url: "https://codeoven-tic-tac-toe.netlify.app",
     image: "https://codeoven.com/logo.png",
     twitter: "@codeoven",
     github: "https://github.com/codeoven",
     discord: "https://discord.gg/codeoven",
     email: "support@codeoven.com",
   };
+export const colorWheel = ["#9055f0", "#ff0058", "#008500", "#f0f030", "#00f000", "#f000f0", "#900090, #f090f0"];
 

@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { winningCombinations } from "./constants";
+import { siteInfo, winningCombinations } from "./constants";
 import {
   collection,
   DocumentData,
@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { Player, Room } from "./types";
 import { db } from "./firebase";
+import { UI_LINKS } from "./links";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -66,7 +67,7 @@ export const roomConverter: FirestoreDataConverter<Room> = {
       name: data.name,
       id: snapshot.id,
       ref: snapshot.ref,
-      players: data.players,
+      // players: data.players,
       creator: data.creator,
       isActive: data.isActive,
       createdAt: data.createdAt,
@@ -94,14 +95,14 @@ export const playerConverter: FirestoreDataConverter<Player> = {
   },
 };
 
-export const getRoomLink = (roomId: string) => `https://codeoven-tic-tac-toe.netlify.app/room/${roomId}`;
+export const getRoomLink = (roomId: string) => `${siteInfo.url + UI_LINKS.rooms}/${roomId}`;
 
 export const getUserPlayer = (players: Player[], userId?: string) => {
-  return players.find((player) => player.id === userId);
+  return players?.find((player) => player.id === userId);
 };
 
 export const getOpponentPlayer = (players: Player[], userId?: string) => {
-  return players.find((player) => player.id !== userId);
+  return players?.find((player) => player.id !== userId);
 };
 
 
@@ -119,3 +120,27 @@ async function fetchDocumentsByIds(id1: string, id2: string) {
 
 // Example usage
 fetchDocumentsByIds("documentId1", "documentId2");
+
+
+
+/**
+ * Performs a search where all letters in the query must appear in any order.
+ * @param query The search query string.
+ * @param items The array of items to search.
+ * @returns An array of items that match the query.
+ */
+export function irregularLetterSearch<T extends Room>(query: string, items: T[]): T[] {
+  if (!query.trim()) return [];
+
+  // Create a regex pattern to match all letters in the query in any order
+  const pattern = query
+    .split("")
+    .map((char) => `(?=.*${char})`) // Lookahead for each character
+    .join("");
+  const regex = new RegExp(pattern, "i"); // Case-insensitive regex
+
+  // Filter items where the title or author matches the pattern
+  return items.filter(
+    (item) => regex.test(item.name) || regex.test(item.isActive)
+  );
+}

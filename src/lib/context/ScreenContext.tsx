@@ -1,9 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 //create a context for the screen to be displayed toggling between the game, the menu, score, login, create room, join room, and settings
 
+import { ReactNode } from "react";
 import { create } from "zustand";
 
-type ModalContent = "game" | "menu" | "score" | "login" | "createRoom" | "joinRoom" | "settings";
+type ModalContent = ReactNode | "score";
 type BottomSheetContent = "info" | "settings" | "notifications";
 
 interface ScreenState {

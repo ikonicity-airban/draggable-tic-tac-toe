@@ -11,18 +11,24 @@ import { getRoomLink } from "@/lib/utils";
 import useAuth from "@/lib/hooks/useAuth";
 import createPlayerDto from "@/lib/DTOs/player-dto";
 import { faker } from "@faker-js/faker";
+import { UI_LINKS } from "@/lib/links";
 
 const NewRoom: React.FC = () => {
   const [roomId, setRoomId] = useState<string>("");
-  const [roomName, setRoomName] = useState<string>(() => faker.lorem.words(2));
+  const [roomName, setRoomName] = useState<string>("");
+  const [roomNamePlaceholder] = useState<string>(() => faker.lorem.words(2));
   const [state, copyToClipboard] = useCopyToClipboard();
   //loading state
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+
+  /**]
+   * create room
+   */
   const createRoom = async () => {
-    if (!roomName) return;
+    if (!roomName) setRoomName(() => roomNamePlaceholder);
+    if (!user || !roomName) return;
     setLoading(true);
-    if (!user) return;
     try {
       const room = await addDoc<Room, Room>(collection(db, "rooms"), {
         name: roomName,
@@ -48,20 +54,21 @@ const NewRoom: React.FC = () => {
   };
 
   return (
-    <section className="p-4">
-      <section className="login-page flex flex-col max-h-[100%] max-w-lg justify-center items-center p-4">
+    <section className="p-4 w-full flex flex-col items-center justify-center">
+      <section className="login-page flex flex-col max-h-[100%] max-w-lg justify-center items-center gap-4 p-4">
         <h2 className="text-2xl font-bold text-outline">Create New Room</h2>
         <div className="bg-[#fff1] z-10 backdrop-blur-sm min-h-24 flex flex-col gap-2 p-4 rounded-lg w-full">
           {!roomId ? (
             <div className="grid flex-1 gap-2">
               <Input
                 name="roomName"
+                autoComplete={faker.lorem.lines(2)}
                 defaultValue={roomName}
                 value={roomName}
                 onChange={(e) => setRoomName(e.target.value)}
                 required
-                placeholder="Room Name"
-              />{" "}
+                placeholder={roomNamePlaceholder}
+              />
               <Button variant="outline" onClick={createRoom} disabled={loading}>
                 Create Room
               </Button>
@@ -74,7 +81,7 @@ const NewRoom: React.FC = () => {
               <div className="flex items-center gap-2 rounded-lg w-full">
                 <div className="grid flex-1 gap-2 text-center">
                   <Input
-                    defaultValue={getRoomLink(roomId)}
+                    // defaultValue={getRoomLink(roomId)}
                     value={getRoomLink(roomId)}
                     readOnly
                     className="text-xs text-green-300 cursor-pointer"
@@ -97,7 +104,7 @@ const NewRoom: React.FC = () => {
                 </Button>
               </div>
               <Link
-                to={`/rooms/${roomId}`}
+                to={UI_LINKS.room(roomId)}
                 className={buttonVariants({ variant: "outline" })}
               >
                 Join Room

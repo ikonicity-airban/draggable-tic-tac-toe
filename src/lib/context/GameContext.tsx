@@ -45,12 +45,18 @@ export const initialGameState = {
   combo: [] as number[],
   strikeClass: null as string | null,
   board: Array(9).fill(null) as (TurnType | null)[],
+  winner: null as string | null,
 };
 
-const gameId = new URLSearchParams(location.search).get("gameId");
-console.log("🚀 ~ gameId:", gameId);
-const roomId = new URLSearchParams(location.search).get("roomId");
-const updateGameState = async (game: GameState, update: Partial<GameState>) => {
+const getGameId = () => new URLSearchParams(location.search).get("gameId");
+
+const getRoomId = () => new URLSearchParams(location.search).get("roomId");
+const updateGameState = async (
+  game: GameState,
+  update: Partial<GameState>,
+  roomId: string | null = getRoomId(),
+  gameId: string | null = getGameId()
+) => {
   return updateDoc(doc(db, "rooms", `${roomId}`, "games", gameId ?? "ai"), {
     ...game,
     ...update,
@@ -60,6 +66,7 @@ const updateGameState = async (game: GameState, update: Partial<GameState>) => {
 const useGameStore = create<GameStoreState>((set) => ({
   ...initialGameState,
   setActive: (index, type, gameState) => {
+
     const state = gameState;
     if (state.gameState !== "inProgress" || state.turn !== type) return;
 
@@ -68,10 +75,12 @@ const useGameStore = create<GameStoreState>((set) => ({
     updateGameState(state, { active, index });
   },
   changeGameState: (gameState, game) => {
+
     set({ gameState });
     updateGameState(game, { gameState });
   },
   makeMove: (index, gameState) => {
+
     const state = gameState;
     if (!state.active) {
       const newIndex =
@@ -102,13 +111,16 @@ const useGameStore = create<GameStoreState>((set) => ({
         playerXTile,
         playerOTile,
       });
-      updateGameState(state, {
-        board: newBoard,
-        gameState: "draw",
-        active: false,
-        playerXTile,
-        playerOTile,
-      });
+      updateGameState(
+        state,
+        {
+          board: newBoard,
+          gameState: "draw",
+          active: false,
+          playerXTile,
+          playerOTile,
+        }
+      );
       return;
     }
     if (check?.match && check?.strikeClass) {
@@ -127,7 +139,7 @@ const useGameStore = create<GameStoreState>((set) => ({
 
       set(gameStateUpdate);
       updateGameState(state, gameStateUpdate);
-      updateDoc(doc(db, "rooms", `${roomId}`, "players", `${winner}`), {
+      updateDoc(doc(db, "rooms", `${getRoomId()}`, "players", `${winner}`), {
         score: increment(1),
       });
       return;
@@ -141,17 +153,22 @@ const useGameStore = create<GameStoreState>((set) => ({
       playerXTile,
       playerOTile,
     });
-    updateGameState(state, {
-      active: false,
-      board: newBoard,
-      turn: state.turn === "cross" ? "circle" : "cross",
-      playerXTile,
-      playerOTile,
-    });
+    updateGameState(
+      state,
+      {
+        active: false,
+        board: newBoard,
+        turn: state.turn === "cross" ? "circle" : "cross",
+        playerXTile,
+        playerOTile,
+      }
+    );
   },
   reset: () => {
     set({ ...initialGameState });
-    updateDoc(doc(db, "rooms", `${roomId}`, "games", `${gameId}`), {
+
+    // console.log("🚀 ~ gameId:", gameId);
+    updateDoc(doc(db, "rooms", `${getRoomId()}`, "games", `${getGameId()}`), {
       ...initialGameState,
     });
   },
