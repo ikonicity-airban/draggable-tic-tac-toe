@@ -1,0 +1,60 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --color1: #009ad4;
+  --color2: #02edff;
+  --bg-color: #010b10;
+  --bg-gradient1: linear-gradient( var(--color2), var(--color1));
+  --bg-gradient2: linear-gradient(45deg, var(--color3), var(--color1));
+}
+
+body {
+  
+  overflow: hidden;
+
+  .loader {
+    position: relative;
+    width: min(80%, 300px);
+    /* background: #000; */
+    height: 40px;
+    /* display: flex;
+    justify-content: space-between; */
+    filter: url(#liquid);
+
+
+     span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: min(10vw, 40px);
+      aspect-ratio: 1;
+      display: inline block;
+      /* border-radius: 50 */
+      box-shadow: 0 0 30px var(--color1);
+      background: var(--bg-gradient1);
+      filter: blur(10px);
+      animation: animate 5s ease-in-out infinite;
+      animation-delay: calc(0.2s * var(--i));
+    }
+    svg {
+      height: 0;
+      width: 0;
+    }
+  }
+}
+
+@keyframes animate {
+  0%,
+  75%,
+  100% {
+    left: 0;
+  }
+  25%,
+  50% {
+    left: calc(100% - 40px);
+  }
+}

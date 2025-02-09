@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { signInAnonymously, User } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router";
 import { FirebaseError } from "firebase/app";
@@ -21,37 +21,43 @@ const useAuth = () => {
       setUser(currentUser);
     });
     return unsubscribe;
-  }, []);
+  }, [user]);
 
   const login = () => {
     setLoading(true);
-    // signInWithPopup(auth, new GoogleAuthProvider())
-    //   .then(({ user: userSnap }) => {
-    //     setDoc(doc(db, "players", user?.uid ?? ""), {
-    //       ...createPlayerDto(userSnap),
-    //     });
-    //     setLoading(false);
-    //     navigate(UI_LINKS.rooms);
-    //   })
-    //   .catch((error) => {
-    //     console.log("🚀 ~ login ~ error:", error.message);
-    //     alert("An Error Occured (" + error.code + ")");
-    //   });
-    signInAnonymously(auth)
-      .then(() => {
-        if (auth.currentUser) {
-          // Signed in..
-          setUser(auth.currentUser);
-          setDoc(doc(db, "players", auth.currentUser?.uid ?? ""), {
-            ...createPlayerDto(auth.currentUser),
+    signInWithPopup(auth, new GoogleAuthProvider())
+      .then(({ user: userSnap }) => {
+        console.log("🚀 ~ .then ~ user:", user)
+        if (userSnap) {
+          setDoc(doc(db, "players", userSnap?.email ?? ""), {
+            ...createPlayerDto(userSnap),
           });
-
-          setTimeout(() => {
-            setLoading(false);
-          }, 1000);
-          navigate("/rooms");
+          setLoading(false);
+          navigate(UI_LINKS.rooms);
+        } else {
+          setLoading(false);
+          alert("An Error Occured");
         }
       })
+      // .catch((error) => {
+      //   console.log("🚀 ~ login ~ error:", error.message);
+      //   alert("An Error Occured (" + error.code + ")");
+      // });
+      // signInAnonymously(auth)
+      //   .then(() => {
+      //     if (auth.currentUser) {
+      //       // Signed in..
+      //       setUser(auth.currentUser);
+      //       setDoc(doc(db, "players", auth.currentUser?.uid ?? ""), {
+      //         ...createPlayerDto(auth.currentUser),
+      //       });
+
+      //       setTimeout(() => {
+      //         setLoading(false);
+      //       }, 1000);
+      //       navigate("/rooms");
+      //     }
+      //   })
       .catch((error: FirebaseError) => {
         const errorCode = error.code;
         const errorMessage = error.message;

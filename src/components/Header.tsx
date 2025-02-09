@@ -1,25 +1,32 @@
 import useAuth from "../lib/hooks/useAuth";
-import "./Header.css";
+
 import Logo from "./Logo";
-import { Sparkle } from "lucide-react";
 import { Link } from "react-router";
 import { UI_LINKS } from "@/lib/links";
+import UserImage from "./UserImage";
 
 export default function Header() {
-  const { /* login */ logout } = useAuth();
+  const { /* login */ user, logout } = useAuth();
+  console.log("🚀 ~ Header ~ user:", user);
+
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      logout();
+    }
+  };
 
   return (
-    <header className="header">
-      <Link
-        to={UI_LINKS.home}
-        className="flex items-center justify-center size-10"
-      >
-        <Logo />
+    <header className="flex items-center justify-between p-3">
+      <Link to={UI_LINKS.home} className="flex">
+        <Logo className="size-10 cursor-pointer" />
       </Link>
-      <div className="" onClick={logout}></div>
-      <div className="relative">
-        <Sparkle size={30} className="text-[#fff9]" />
-        <Sparkle size={10} className="text-[#fff9] absolute bottom-0 left-0" />
+      <div className="flex items-center gap-6">
+        <div className="relative cursor-pointer" onClick={handleLogout}>
+          <UserImage photoURL={user?.photoURL || ""} />
+          <span className="absolute bottom-0 end-0 size-3 rounded-full border-2 border-background bg-emerald-500">
+            <span className="sr-only">Online</span>
+          </span>
+        </div>
       </div>
     </header>
   );

@@ -1,9 +1,8 @@
 import AuthHOC from "@/components/AuthHOC";
-import Logo from "@/components/Logo";
-import { UI_LINKS } from "@/lib/links";
+import Header from "@/components/Header";
 import { Helmet } from "react-helmet";
 
-import { Link, Outlet, useLocation } from "react-router";
+import { Outlet, useLocation } from "react-router";
 
 function RoomLayout() {
   const pathname = useLocation().pathname.split("/").at(2) || "Home";
@@ -12,10 +11,11 @@ function RoomLayout() {
       <Helmet>
         <title>Rooms | {pathname}</title>
       </Helmet>
-      <Link to={UI_LINKS.home} className="flex p-4">
-        <Logo className="size-10" />
-      </Link>
-      <Outlet />
+      <Header />
+      <section className="login-page flex flex-col h-full max-w-lg justify-center items-center p-4"></section>
+      <div className="flex flex-col items-center justify-center h-[90vh] w-screen z-10">
+        <Outlet />
+      </div>
     </AuthHOC>
   );
 }

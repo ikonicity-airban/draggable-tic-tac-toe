@@ -4,8 +4,8 @@
   "description": "A fun and interactive Multiplayer Tic Tac Toe game.",
   "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#000",
+  "theme_color": "#f0f",
   "icons": [
     {
       "src": "https://images.crunchbase.com/image/upload/c_pad,f_auto,q_auto:eco,dpr_1/twzqnyf3u7lcum0rptqw",

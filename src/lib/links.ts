@@ -4,5 +4,5 @@ export const UI_LINKS = {
     rooms: '/rooms',
     room: (id:string) => `/rooms/${id}`,
     login: '/login',
-
+    newRoom : '/rooms/new',
 }

@@ -10,11 +10,14 @@ import { useNavigate, useParams } from "react-router";
 import { Button, buttonVariants } from "../ui/button";
 import { useEffect, useState } from "react";
 import useAuth from "@/lib/hooks/useAuth";
-import { Play } from "lucide-react";
+import { ArrowLeft, Play } from "lucide-react";
 import createPlayerDto from "@/lib/DTOs/player-dto";
 import { initialGameState } from "@/lib/context/GameContext";
 import Logo from "../Logo";
 import { Skeleton } from "../ui/skeleton";
+import { Card, CardContent } from "../ui/card";
+import LinkButton from "../comp-86";
+import { UI_LINKS } from "@/lib/links";
 
 function Room() {
   const { roomId } = useParams() || "";
@@ -34,6 +37,7 @@ function Room() {
     doc(db, "rooms", roomId ?? "").withConverter(roomConverter),
     { snapshotListenOptions: { includeMetadataChanges: true } }
   );
+
   console.log("🚀 ~ Room ~ room:", room);
 
   const [players, loadingPlayers] = useCollectionData(
@@ -45,12 +49,12 @@ function Room() {
     }
   );
 
-  const [player, loadingPlayer] = useDocumentData<Player>(
-    doc(db, "players", `${user?.uid}`).withConverter(playerConverter),
-    {
-      snapshotListenOptions: { includeMetadataChanges: true },
-    }
-  );
+  // const [player, loadingPlayer] = useDocumentData<Player>(
+  //   doc(db, "players", `${user?.uid}`).withConverter(playerConverter),
+  //   {
+  //     snapshotListenOptions: { includeMetadataChanges: true },
+  //   }
+  // );
 
   useEffect(() => {
     if (room?.isActive) {
@@ -128,12 +132,30 @@ function Room() {
     }
   };
 
-  if (!room && !loading)
+  if (room && !loading)
     return (
-      <section className="p-4 min-w-fit flex flex-col justify-center items-center">
-        <section className="login-page flex flex-col h-full max-w-lg justify-center items-center p-4">
-          no room found
-        </section>
+      <section className="p-4 min-w-fit flex flex-col justify-center items-center z-10">
+        <Card className="bg-[#fff1] z-10 backdrop-blur-sm min-h-24 flex flex-col gap-6 p-4 rounded-lg w-full">
+          <CardContent className="p-6 tic flex flex-col text-4xl gap-8">
+            No Room Found <br />
+            <LinkButton
+              Icon={Play}
+              to={UI_LINKS.newRoom}
+              className="py-6"
+            >
+              Create Room
+            </LinkButton>
+          </CardContent>
+        </Card>
+        {/* <section className="login-page flex flex-col h-full max-w-lg justify-center items-center p-4"></section> */}
+        <Button
+          onClick={() => navigate(UI_LINKS.rooms)}
+          variant="link"
+          className="gap-4 z-10 text-accent group"
+        >
+          <ArrowLeft className="group-hover:-translate-x-1 transition-transform" />
+          Back to Rooms
+        </Button>
       </section>
     );
 

@@ -15,7 +15,9 @@
 body {
   --clr: #fff;
   height: 100vh;
-  background-image: linear-gradient(45deg, #0085ff, #ff1458);
+  width: 100vw;
+  /* background-image: linear-gradient(45deg, #0085ff, #ff1458); */
+  background: hsl(var(--foreground));
   overflow: hidden;
   position: relative;
 }
@@ -143,11 +145,14 @@ section.login-page::before {
 section.login-page {
   /* height: 85vh; */
   width: 100%;
+  position: absolute;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   perspective: 1000px;
   &::after {
+    position: absolute;
     background-image: linear-gradient(45deg, #490726, #11c255);
     width: 150px;
     height: 150px;
@@ -160,13 +165,13 @@ section.login-page {
     transform: translateY(0);
   }
   30% {
-    transform: translate(20rem, 200px);
+    transform: translate(50vw, 40vh);
   }
   60% {
-    transform: translate(-5rem, 400px) scale(1.5);
+    transform: translate(-3vw, 40vh) scale(1.5);
   }
   80% {
-    transform: translate(1rem, 300px) scale(0.5);
+    transform: translate(50vw, 30vh) scale(0.5);
   }
 
   100% {

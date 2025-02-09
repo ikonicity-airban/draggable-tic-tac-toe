@@ -17,6 +17,7 @@ import NewRoom from "./components/room/NewRoom";
 import RoomLayout from "./layouts/RoomLayout";
 import { colorWheel } from "./lib/constants";
 import MainPage from "./pages/main-page";
+import MainLayout from "./layouts/main-layout";
 
 function App() {
   const { gameState } = useGameState();
@@ -45,7 +46,7 @@ function App() {
         <meta name="theme-color" content={themeColor} />
       </Helmet>
       <Routes>
-        <Route element={<GameLayout />}>
+        <Route element={<MainLayout />}>
           <Route index element={<MainPage/>} />
         </Route>
         <Route element={<AuthLayout />}>

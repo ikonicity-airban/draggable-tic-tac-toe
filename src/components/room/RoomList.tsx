@@ -9,21 +9,25 @@ import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { buttonVariants } from "../ui/button";
 import { Pause, Play, Plus, Trash2 } from "lucide-react";
-import { irregularLetterSearch, roomConverter } from "@/lib/utils";
+import { cn, irregularLetterSearch, roomConverter } from "@/lib/utils";
 import Loading from "../Loading";
-import { Input } from "../ui/input";
 import Room from "./Room";
 import { UI_LINKS } from "@/lib/links";
 import useAuth from "@/lib/hooks/useAuth";
+import SearchBar from "../comp-26";
+import { Card } from "../ui/card";
+import LinkButton from "../comp-86";
 
 const RoomList: React.FC = () => {
   const { user } = useAuth();
+  console.log("🚀 ~ user:", user);
   const [rooms, loading] = useCollectionData(
     collection(db, "rooms").withConverter(roomConverter),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
+  console.log("🚀 ~ rooms:", rooms);
   const [inputValue, setInputValue] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Room[] | undefined>();
 
@@ -46,64 +50,72 @@ const RoomList: React.FC = () => {
   }
 
   return (
-    <section className="h-full min-w-fit flex flex-col justify-center items-center p-4">
-      <section className="login-page flex flex-col max-h-[100%] max-w-xl justify-center items-center p-4">
-        <h2 className="text-2xl font-bold text-outline">Available Rooms</h2>
-        <div className="bg-[#fff1] z-10 backdrop-blur-sm min-h-24 flex flex-col gap-2 p-4 rounded-lg w-full">
-          <div className="flex items-center justify-between gap-3">
-            <Input
-              // type="search"
-              className="text-sm"
-              value={inputValue}
+    <section className="min-w-fit min-h-full max-w-xl mx-auto flex flex-col items-center p-4 z-10">
+      {/* <section className="login-page flex flex-col max-h-[100%] max-w-xl justify-center items-center p-4"></section> */}
+
+      <h2 className="text-2xl font-bold pixel mb-3 mt-10 z-10">
+        Available Rooms
+      </h2>
+      <Card className="bg-[#fff1] backdrop-blur-lg min-h-24 flex flex-col gap-2 p-4 rounded-lg w-full">
+        <div className="flex items-center justify-between gap-3">
+          {!loading && rooms?.length ? (
+            <SearchBar
               placeholder="Search rooms"
               onChange={handleInputChange}
             />
-            <Link
-              className={buttonVariants({ variant: "outline" })}
-              to="/rooms/new"
+          ) : null}
+          <Link
+            className={buttonVariants({
+              variant: "outline",
+              className: cn(
+                "group max-sm:px-1 p-6 gap-2  hover:bg-accent/10 hover:text-accent/80",
+                { "w-full": !rooms?.length }
+              ),
+            })}
+            to="/rooms/new"
+          >
+            <Plus
+              color="lightgreen"
+              className="group-hover:translate-x-0.5 transition-transform"
+            />
+            <div
+              className={cn("max-sm:hidden", {
+                "max-sm:block": !rooms?.length,
+              })}
             >
-              <Plus />
               Create Room
-            </Link>
-          </div>
-          <ScrollArea className="w-full max-h-[40vh] p-2 text-sm">
-            {(searchResults || (!inputValue ? rooms : []))?.map((room) => (
-              <div className="" key={room.id}>
-                {!room.isActive ? (
-                  <div className="flex items-center gap-2 justify-between">
-                    <Link
-                      key={room.id}
-                      to={UI_LINKS.room(room.id)}
-                      className="flex items-center gap-2 p-3 flex-1 justify-between"
-                    >
-                      {room.name}
-                      <Play size={16} />
-                    </Link>
-                    {user?.uid === room.creator && (
-                      <div
-                        className="flex items-center gap-2 cursor-pointer"
-                        onClick={() => handleDeleteRoom(room.creator, room.id)}
-                      >
-                        <Trash2 size={16} />
-                      </div>
-                    )}
-                  </div>
-                ) : (
+            </div>
+          </Link>
+        </div>
+        <ScrollArea className="w-full max-h-[40vh] p-2 text-sm">
+          {(inputValue ? searchResults : rooms)?.map((room) => (
+            <div className="" key={room.id}>
+              <div className="flex items-center gap-2 justify-between group">
+                <LinkButton
+                  key={room.id}
+                  to={room.isActive ? UI_LINKS.room(room.id) : UI_LINKS.game(room.id)}
+                  Icon={!room.isActive ? Play : Pause}
+                  className="flex items-center border-none gap-2 py-6 flex-1 transition-all justify-between"
+                >
+                  {room.name}
+                </LinkButton>
+                {user?.uid === room.creator && (
                   <div
-                    key={room.id}
-                    className="flex items-center gap-2 p-3 justify-between"
+                    className="group-hover:flex items-center gap-2 hidden cursor-pointer "
+                    onClick={() => handleDeleteRoom(room.creator, room.id)}
                   >
-                    {room.name}
-                    <Pause className="animate-pulse" size={16} />
+                    <Trash2 size={16} />
                   </div>
                 )}
-                <Separator className="my-2 opacity-20" />
               </div>
-            ))}
-            <ScrollBar className="w-1" />
-          </ScrollArea>
-        </div>
-      </section>
+
+              <Separator className="my-2 opacity-20" />
+            </div>
+          ))}
+          <ScrollBar className="w-1" />
+        </ScrollArea>
+        {rooms ? <Card className=""></Card> : null}
+      </Card>
     </section>
   );
 };
